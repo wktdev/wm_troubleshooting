@@ -15,6 +15,8 @@ import {Consumer, Context} from '../../PageComponents/Context';
 import { instantSearchFilter } from '../../helper_functions';
 import "../../PageComponents/fonts/index.css";
 
+const clientsRef = firebase.database().ref('clients');
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -40,6 +42,9 @@ const styles = theme => ({
        background: "#8a0eff3b",
          transition: "0.4s"
      },
+    },
+    clientItemSelected: {
+      background: "#8a0eff3b",
     },
 
     textField:{
@@ -86,51 +91,71 @@ function Dashboard(props){
     const userData = useContext(Context);
 
     
-    const clientsRef = firebase.database().ref('clients');
+
     const [clientList,setClientListState] = useState([]);   
     const [clientListForRender,setClientListStateForRender] = useState([]);
     const [selectedIndex, updateSelectedIndex] = useState(0);
 
+  useEffect(() => {
+    if (clientList.length !== clientListForRender.length) {
+      setClientListStateForRender(clientList);
+    }
+  }, [clientList, clientListForRender])
 
+  useEffect(() => {
+   
+    clientsRef.on('child_added', snapshot => {
+      const client = snapshot.val();
+      client.key = snapshot.key;     //     __________________________1. get firebase data
+      
+
+     setClientListState(function(prev){       
+
+
+    
+      
+          //  setClientListStateForRender([client, ...prev]); //_______2 store data    
+
+
+          
+
+           return [client,...prev]
+      });
+
+   });
+
+   return () => {
+    clientsRef.off();
+   };
+  }, [clientsRef])
 
     useEffect(() => {
-
-
-
       function handleKeyPress(event,arr){
-        console.log(arr)
+        
         if(event.key === "ArrowDown"){
+     
           updateSelectedIndex((prev)=>{
-              return prev += 1
+
+              const filteredClientListForRender = clientListForRender.filter(client => userData.state.userID === client.user_id);
+              return filteredClientListForRender.length - 1 === prev ? 0 : prev + 1;
+          });
+        }
+        if(event.key === "ArrowUp"){
+          updateSelectedIndex((prev)=>{
+
+            const filteredClientListForRender = clientListForRender.filter(client => userData.state.userID === client.user_id);
+              return 0 === prev ? filteredClientListForRender.length - 1 : prev - 1;
           });
         }
       }
 
 
-
-      clientsRef.on('child_added', snapshot => {
-          const client = snapshot.val();
-          client.key = snapshot.key;     //     __________________________1. get firebase data
-
-
-         setClientListState(function(prev){       
-
-
-            
-
-               setClientListStateForRender(()=>[client,...prev]); //_______2 store data    
-
-
-              
-
-               return[client,...prev]
-          });
-
-       });
-
-
 document.addEventListener('keydown', handleKeyPress)
-    },[]);
+
+       return () => {
+        document.removeEventListener('keydown', handleKeyPress)
+       }
+    },[clientListForRender]);
 
 
 
@@ -281,7 +306,11 @@ document.addEventListener('keydown', handleKeyPress)
 
                                     <a  key={index} href={`/dashboard/${userData.state.userID}/company/${val.name}/${val.key}`}> 
 
-                                      <ListItem className={classes.clientItem}>{val.name}                        
+                                      <ListItem  className={
+                            selectedIndex === index
+                              ? classes.clientItemSelected
+                              : classes.clientItem
+                          }>{val.name}                        
                                         <span onClick={(event)=>deleteWorkflow(event,val)}>
                                         <IconButton edge="end" aria-label="delete">
                                         <DeleteIcon />
