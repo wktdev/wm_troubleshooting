@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'logo_font';
+  src: url(./next.ttf);
+}
+
+.logoFontContainer{
+  font-family: "logo_font";
+  font-size:56px;
+  opacity:0.6;
+  color:#96008fc9;
+  background-color:"orange";
+  margin: 0 auto;
+  top:200px;
+
+
+
+text-shadow: -3px 2px 0px #ffffff, -11px 5px 20px #ffffff, -2px 1px 0px #ff00002e;
+
+ }
+
+
+ .textFontContainer{
+ 	  font-family: "logo_font";
+  font-size:20px;
+  opacity:0.6;
+  color:#96008fc9;
+  background-color:"orange";
+  margin: 0 auto;
+  top:200px;
+
+
+
+text-shadow: -3px 2px 0px #ffffff, -11px 5px 20px #ffffff, -2px 1px 0px #ff00002e;
+ }
