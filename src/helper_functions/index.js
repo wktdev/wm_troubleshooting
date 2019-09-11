@@ -10,6 +10,8 @@ export function instantSearchFilter(s,arr){
             return val
   })
 
+  console.log(result)
+
   return result
 
 
